@@ -1,0 +1,39 @@
+name: Revisar codigo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v6
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias Python
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install ruff pytest
+
+      - name: Revisar Python
+        run: |
+          ruff check .
+          if [ -d tests ]; then pytest; fi
+
+      - name: Configurar Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Instalar y revisar frontend
+        run: |
+          if [ -f package.json ]; then npm install; npm run build --if-present; npm test --if-present; fi
