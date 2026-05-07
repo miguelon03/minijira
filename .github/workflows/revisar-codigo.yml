@@ -19,13 +19,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Instalar dependencias Python
+      - name: Revisar Python Flask
         run: |
+          python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install ruff pytest
-
-      - name: Revisar Python
-        run: |
           ruff check .
           if [ -d tests ]; then pytest; fi
 
@@ -34,14 +32,12 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Instalar y revisar frontend
+      - name: Revisar Astro JavaScript
         run: |
-          if [ -f package.json ]; then npm install; npm run build --if-present; npm test --if-present; fi
+          if [ -f package.json ]; then npm install; fi
+          if [ -f package.json ]; then npm run build --if-present; fi
+          if [ -f package.json ]; then npm test --if-present; fi
 
-      - name: Instalar OpenAI SDK
-        run: pip install openai
-
-      - name: Revision con IA
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python scripts/ai_review.py
+      - name: Revisar PHP
+        run: |
+          if find . -name "*.php" | grep -q .; then php -l $(find . -name "*.php"); fi
